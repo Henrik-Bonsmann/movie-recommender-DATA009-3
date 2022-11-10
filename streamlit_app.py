@@ -57,13 +57,13 @@ def main():
     name = ''
     ini(n)
     while True:
-        while ~logged_in:
+        if logged_in:
+            st.write(f"Welcome, {name}")
+            logged_in = ~st.button("Log Out")
+        else: #not logged in
             name = st.text_input('Username')
             logging = st.button("Log In")
             if logging & (name != ''):
                 logged_in = True
-        while logged_in:
-            st.write(f"Welcome, {name}")
-            logged_in = ~st.button("Log Out")
 
 main()
