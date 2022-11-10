@@ -1,0 +1,6 @@
+pandas
+numpy
+regex
+streamlit
+sklearn
+
