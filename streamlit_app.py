@@ -3,7 +3,7 @@ import numpy as np
 import re
 import streamlit as st
 
-def ini():
+def get_data():
     """
     Initializes the app. Loads and cleans datasets.
     """
@@ -34,7 +34,7 @@ def ini():
     
     movies_df['year'] = movies_df['title'].str.extract(r"\(([0-9]+)\)")
     movies_df['title'] = movies_df['title'].str.replace(r"\(.*\)","")
-    movies_df['genres'] = movies_df['genres'].str.split("|")
+    #movies_df['genres'] = movies_df['genres'].str.split("|")
 
     ratings_df['timestamp'] = pd.to_datetime(ratings_df['timestamp'], unit='s')
     tags_df['timestamp'] = pd.to_datetime(tags_df['timestamp'], unit='s')
@@ -45,12 +45,24 @@ def best_rated(n=10):
     rank = movies_df.merge(best, on= 'movieId')
     return rank.nlargest(n, 'opinion')[['title', 'rating', 'userId']].rename(columns = {'title': 'Title', 'rating': 'Rating', 'userId': '#Ratings'})
 
+def ini(n):
+    get_data()
+    st.title('WBSFlix')
+    st.header('Best rated Movies!')
+    st.table(best_rated(n))
 
 def main():
-    ini()
-    st.title('WBSFlix')
     n = 10
-    st.header('Best rated Movies!')
-    st.write(best_rated(n))
+    logged_in = False
+    ini(n)
+    while True:
+        while ~logged_in:
+            name = st.text_input('Username')
+            logging = st.button("Log In")
+            if logging & name != '':
+                logged_in = True
+        while logged_in:
+            st.write(f"Welcome, {name}")
+            logged_in = ~st.button("Log Out")
 
 main()
