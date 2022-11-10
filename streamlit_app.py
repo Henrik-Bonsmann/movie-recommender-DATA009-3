@@ -47,25 +47,26 @@ def best_rated(n=10):
     return rank.nlargest(n, 'opinion')[['title', 'rating', 'userId']].rename(columns = {'title': 'Title', 'rating': 'Rating', 'userId': '#Ratings'})
 
 def movie_recommendation_user_based(id, n): # id of the user
-  users_items_sparse = pd.pivot_table(data=ratings_df,
-                             values='rating',
-                             index='userId',
-                             columns='movieId')
+    users_items_sparse = pd.pivot_table(data=ratings_df,
+                                        values='rating',
+                                        index='userId',
+                                        columns='movieId')
   
   
-  mid = (ratings_df['rating'].min() + ratings_df['rating'].max())/2
-  users_items = users_items_sparse.fillna(mid)
-  user_similarities = pd.DataFrame(cosine_similarity(users_items),
-                                 columns=users_items.index, 
-                                 index=users_items.index)
+    mid = (ratings_df['rating'].min() + ratings_df['rating'].max())/2
+    users_items = users_items_sparse.fillna(mid)
+    user_similarities = pd.DataFrame(cosine_similarity(users_items),
+                                    columns=users_items.index, 
+                                    index=users_items.index)
 
-  weights = user_similarities.query("userId!=@id")[id] / sum(user_similarities.query("userId!=@id")[id])
-  not_watched_movies = (users_items.loc[users_items.index!=id, users_items_sparse.loc[id,:].isna()])
-  weighted_averages = pd.DataFrame(not_watched_movies.T.dot(weights), columns=["predicted_rating"])
+    not_watched_movies = (users_items.loc[users_items.index!=id, users_items_sparse.loc[id,:].isna()])
+    weights = user_similarities.query("userId!=@id")[id] / sum(user_similarities.query("userId!=@id")[id])
+  
+    weighted_averages = pd.DataFrame(not_watched_movies.T.dot(weights), columns=["predicted_rating"])
 
-  recommendations = weighted_averages.merge(movies_df, left_index=True, right_on="movieId").sort_values("predicted_rating", ascending=False).head(n)
+    recommendations = weighted_averages.merge(movies_df, left_index=True, right_on="movieId").sort_values("predicted_rating", ascending=False).head(n)
 
-  return recommendations[["title", "genres"]]
+    return recommendations[["title", "genres"]]
 
 def main():
     get_data()
@@ -73,7 +74,7 @@ def main():
     st.header('Best rated Movies!')
     st.table(best_rated(10))
 
-    username = st.text_input("username")
+    username = int(st.text_input("username"))
     if username:
         st.header("Our Recommendations for You:")
         st.table(movie_recommendation_user_based(username, 5))
