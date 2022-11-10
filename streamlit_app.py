@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 import streamlit as st
+from sklearn.metrics.pairwise import cosine_similarity
 
 def get_data():
     """
@@ -45,27 +46,37 @@ def best_rated(n=10):
     rank = movies_df.merge(best, on= 'movieId')
     return rank.nlargest(n, 'opinion')[['title', 'rating', 'userId']].rename(columns = {'title': 'Title', 'rating': 'Rating', 'userId': '#Ratings'})
 
-def ini(n):
+def movie_recommendation_user_based(id, n): # id of the user
+  users_items_sparse = pd.pivot_table(data=ratings_df,
+                             values='rating',
+                             index='userId',
+                             columns='movieId')
+  
+  
+  mid = (ratings_df['rating'].min() + ratings_df['rating'].max())/2
+  users_items = users_items_sparse.fillna(mid)
+  user_similarities = pd.DataFrame(cosine_similarity(users_items),
+                                 columns=users_items.index, 
+                                 index=users_items.index)
+
+  weights = user_similarities.query("userId!=@id")[id] / sum(user_similarities.query("userId!=@id")[id])
+  not_watched_movies = (users_items.loc[users_items.index!=id, users_items_sparse.loc[id,:].isna()])
+  weighted_averages = pd.DataFrame(not_watched_movies.T.dot(weights), columns=["predicted_rating"])
+
+  recommendations = weighted_averages.merge(movies_df, left_index=True, right_on="movieId").sort_values("predicted_rating", ascending=False).head(n)
+
+  return recommendations[["title", "genres"]]
+
+def main():
     get_data()
     st.title('WBSFlix')
     st.header('Best rated Movies!')
-    st.table(best_rated(n))
+    st.table(best_rated(10))
 
-def main():
-    n = 10
-    logged_in = False
-    name = ''
-    ini(n)
-    '''
-    while True:
-        if logged_in:
-            st.write(f"Welcome, {name}")
-            logged_in = ~st.button("Log Out")
-        else: #not logged in
-            name = st.text_input('Username')
-            logging = st.button("Log In")
-            if logging & (name != ''):
-                logged_in = True
-    '''
+    username = st.text_input("username")
+    if username:
+        st.header("Our Recommendations for You:")
+        st.table(movie_recommendation_user_based(username, 5))
+    
 
 main()
