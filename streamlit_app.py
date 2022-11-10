@@ -1,14 +1,17 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import re
+import streamlit as st
+
 def ini():
     """
-    Initializes the app. Imports packages, loads and cleans datasets.
+    Initializes the app. Loads and cleans datasets.
     """
-    import pandas as pd
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import re
 
     # Import the datasets
+    global links_df, movies_df, ratings_df, tags_df
 
     # Links
     url_links = "https://drive.google.com/file/d/14ULP-ZyKnutIAs-x0SgB77S9SsCVUoOQ/view?usp=share_link"
@@ -38,8 +41,18 @@ def ini():
     ratings_df['timestamp'] = pd.to_datetime(ratings_df['timestamp'], unit='s')
     tags_df['timestamp'] = pd.to_datetime(tags_df['timestamp'], unit='s')
 
+def best_rated(n=10):
+    best = ratings_df.groupby('movieId', as_index = False).aggregate({'userId': 'count', 'rating':'mean'})
+    best["opinion"] = best["rating"]*np.log(best["userId"])
+    rank = movies_df.merge(best, on= 'movieId')
+    return rank.nlargest(n, 'opinion')[['movieId', 'title', 'rating', 'userId']].rename(columns = {'userId': '#ratings'})
+
 
 def main():
     ini()
+    st.title('WBSFlix')
+    n = 10
+    st.header('Best rated Movies!')
+    st.write(best_rated(n))
 
 main()
