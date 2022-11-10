@@ -56,6 +56,7 @@ def main():
     logged_in = False
     name = ''
     ini(n)
+    '''
     while True:
         if logged_in:
             st.write(f"Welcome, {name}")
@@ -65,5 +66,6 @@ def main():
             logging = st.button("Log In")
             if logging & (name != ''):
                 logged_in = True
+    '''
 
 main()
