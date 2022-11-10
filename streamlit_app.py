@@ -54,12 +54,13 @@ def ini(n):
 def main():
     n = 10
     logged_in = False
+    name = ''
     ini(n)
     while True:
         while ~logged_in:
             name = st.text_input('Username')
             logging = st.button("Log In")
-            if logging & name != '':
+            if logging & (name != ''):
                 logged_in = True
         while logged_in:
             st.write(f"Welcome, {name}")
