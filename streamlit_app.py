@@ -43,7 +43,7 @@ def best_rated(n=10):
     best = ratings_df.groupby('movieId', as_index = False).aggregate({'userId': 'count', 'rating':'mean'})
     best["opinion"] = best["rating"]*np.log(best["userId"])
     rank = movies_df.merge(best, on= 'movieId')
-    return rank.nlargest(n, 'opinion')[['movieId', 'title', 'rating', 'userId']].rename(columns = {'userId': '#ratings'})
+    return rank.nlargest(n, 'opinion')[['title', 'rating', 'userId']].rename(columns = {'title': 'Title', 'rating': 'Rating', 'userId': '#Ratings'})
 
 
 def main():
