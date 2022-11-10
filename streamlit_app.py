@@ -74,11 +74,13 @@ def main():
     st.header('Best rated Movies!')
     st.table(best_rated(10))
 
-    username = int(st.text_input("username"))
-    if username in ratings_df.userId.unique():
-        st.header("Our Recommendations for You:")
-        st.table(movie_recommendation_user_based(username, 5))
-    else:
-        st.write('No valid username detected.')
+    username = st.text_input("username")
+    if username:
+        username = int(username)
+        if int(username) in ratings_df.userId.unique():
+            st.header("Our Recommendations for You:")
+            st.table(movie_recommendation_user_based(username, 5))
+        else:
+            st.write('No valid username detected.')
     
 main()
