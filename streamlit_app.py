@@ -89,6 +89,7 @@ def chatbot():
     st.header("Let us help You!")
     if 'moviename' not in st.session_state:
         st.session_state['moviename'] = ''
+    st.write(st.session_state.moviename)
     st.session_state['moviename'] = st.text_input("Tell me a movie you like and I'll suggest something similar!")
     if st.session_state['moviename']:
         suggestions = movies_df["title"].str.lower().str.contains(st.session_state['moviename'].lower())
@@ -107,7 +108,6 @@ def chatbot():
                 
         else:
             st.write("Sorry, I couldn't find that.")
-    st.write(st.session_state.moviename)
 
 def search_engine():
     moviename = st.text_input('Search')
