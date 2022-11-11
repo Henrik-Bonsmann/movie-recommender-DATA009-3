@@ -124,10 +124,13 @@ def chatbot():
         if suggestions.any():
             if suggestions.sum() == 1:
                 film = movies_df[suggestions]['title'].values[0]
+                film.index = film.reset_index().index+1
                 st.write(f"Here's some movies similar to \"{film}\":")
                 st.table(movie_recommendation_item_based(get_movie_id(film), 3))
             else:
                 st.write('I have found multiple movies!')
+                choice = movies_df[suggestions]['title']
+                choice.index = choice.reset_index().index +1
                 st.table(movies_df[suggestions]['title'])
                 select = st.text_input("Please pick from the list.")
                 if select:
@@ -138,6 +141,7 @@ def chatbot():
                     if isinstance(select, int):
                         #We should really test to see that this is a valid number!
                         movieno = movies_df[suggestions].iloc[select-1]['title']
+                        movieno.index = movieno.reset_index().index +1
                         st.write(f"Here's some movies similar to \"{movieno}\":")
                         st.table(movie_recommendation_item_based(get_movie_id(movieno), 3))
 
