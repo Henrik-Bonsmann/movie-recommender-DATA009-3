@@ -93,10 +93,11 @@ def chatbot():
                 st.write('I have found multiple movies!')
                 st.table(movies_df[suggestions][['title', 'genres', 'year']])
                 select = st.text_input("Please specify or pick one by number.")
-                if isinstance(select, int):
-                    st.session_state.moviename = movies_df[suggestions].iloc(select-1)
-                else:
-                    st.session_state.moviename = select
+                if select:
+                    if isinstance(select, int):
+                        st.session_state.moviename = movies_df[suggestions].iloc(select-1)
+                    else:
+                        st.session_state.moviename = select
 
         else:
             st.write("Sorry, I couldn't find that.")
