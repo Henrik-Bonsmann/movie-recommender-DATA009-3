@@ -94,7 +94,7 @@ def chatbot():
         suggestions = movies_df["title"].str.lower().str.contains(st.session_state['moviename'].lower())
         if suggestions.any():
             if suggestions.sum() == 1:
-                st.write(f"Here's some movies similar to {movies_df[suggestions]['title'].values[0]}:")
+                st.write(f"Here's some movies similar to \"{movies_df[suggestions]['title'].values[0]}\":")
             else:
                 st.write('I have found multiple movies!')
                 st.table(movies_df[suggestions]['title'])
@@ -107,6 +107,7 @@ def chatbot():
                 
         else:
             st.write("Sorry, I couldn't find that.")
+    st.write(st.session_state.moviename)
 
 def search_engine():
     moviename = st.text_input('Search')
