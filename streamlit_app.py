@@ -99,8 +99,8 @@ def chatbot():
                 select = st.text_input("Please pick from the list.")
                 if select:
                     if isinstance(select, int):
-                        moviename = movies_df[suggestions].iloc[select-1]['title']
-                        suggestions = movies_df["title"].str.lower().str.contains(st.session_state['moviename'].lower())
+                        movieno = movies_df[suggestions].iloc[select-1]['title']
+                        suggestions = movies_df["title"].str.lower().str.contains(movieno.lower())
                         if suggestions.any():
                             if suggestions.sum() == 1:
                                 st.write(f"Here's some movies similar to \"{movies_df[suggestions]['title'].values[0]}\":")
