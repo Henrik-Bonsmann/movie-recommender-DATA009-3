@@ -109,9 +109,10 @@ def movie_recommendation_item_based(id, n): #id of a movie
     my_movie_corr_summary.drop(id, inplace=True) # drop my_movie itself
 
     top_similar = my_movie_corr_summary[my_movie_corr_summary['rating_count']>=10].sort_values('PearsonR', ascending=False).head(n)
+    top_similar = top_similar.merge(movies_df, on= 'movieId')
     top_similar.index = top_similar.reset_index().index +1
 
-    return top_similar.merge(movies_df, on= 'movieId')[['title', 'genres']]
+    return top_similar[['title', 'genres']]
 
 def get_movie_id(film):
     return movies_df[movies_df['title']==film]['movieId'].values[0]
