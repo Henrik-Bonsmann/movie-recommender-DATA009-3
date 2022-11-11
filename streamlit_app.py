@@ -84,18 +84,18 @@ def user_recommend():
 def chatbot():
     st.header("Let us help You!")
     st.write("Tell me a movie you like and I'll suggest something similar!")
-    moviename = st.text_input
+    moviename = st.text_input()
     if moviename:
         suggestions = movies_df[movies_df["title"].str.contains(moviename)]
 
 def search_engine():
-    moviename = st.text_input
+    moviename = st.text_input('Search', value="")
     if moviename:
         suggestions = movies_df["title"].str.contains(moviename)
         if suggestions.any():
             st.table(movies_df[suggestions][['title', 'genres', 'year']])
         else:
-            st.write("No movies with this name in databas.")
+            st.write("No movies with this name in database.")
 
 def main():
     get_data()
