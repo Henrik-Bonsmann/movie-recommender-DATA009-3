@@ -121,6 +121,6 @@ def main():
     st.header('Best rated Movies!')
     st.table(best_rated(10))
 
-    #chatbot()
+    chatbot()
     
 main()
