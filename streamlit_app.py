@@ -85,10 +85,11 @@ def user_recommend():
         else:
             st.write('No valid username detected.')
 
-movies_crosstab = pd.pivot_table(data=ratings_df, values='rating', index='userId', columns='movieId')
+
 
 def movie_recommendation_item_based(id, n): #id of a movie
     # Get the ratings of a target restuarant without NA values
+    movies_crosstab = pd.pivot_table(data=ratings_df, values='rating', index='userId', columns='movieId')
     my_movie_ratings = movies_crosstab[id]
     my_movie_ratings = my_movie_ratings[my_movie_ratings>=0]
 
