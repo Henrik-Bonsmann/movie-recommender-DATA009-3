@@ -34,7 +34,7 @@ def get_data():
 
     
     movies_df['year'] = movies_df['title'].str.extract(r"\(([0-9]+)\)")
-    movies_df['title'] = movies_df['title'].str.replace(r"\(.*\)","")
+    movies_df['title'] = movies_df['title'].str.replace(r" \(.*\)","")
     #movies_df['genres'] = movies_df['genres'].str.split("|")
 
     for i in range(len(movies_df)):
@@ -84,6 +84,37 @@ def user_recommend():
             st.table(movie_recommendation_user_based(username, 5))
         else:
             st.write('No valid username detected.')
+
+movies_crosstab = pd.pivot_table(data=ratings_df, values='rating', index='userId', columns='movieId')
+
+def movie_recommendation_item_based(id, n): #id of a movie
+    # Get the ratings of a target restuarant without NA values
+    my_movie_ratings = movies_crosstab[id]
+    my_movie_ratings = my_movie_ratings[my_movie_ratings>=0]
+
+    movie_similarities = movies_crosstab.corrwith(my_movie_ratings)
+    movie_similarities.dropna(inplace=True)
+
+    corr_my_movie = pd.DataFrame(movie_similarities, columns=['PearsonR'])
+    corr_my_movie.dropna(inplace=True)
+
+    rating = pd.DataFrame(ratings_df.groupby('movieId')['rating'].mean())
+    rating['rating_count'] = ratings_df.groupby('movieId')['rating'].count()
+
+    my_movie_corr_summary = corr_my_movie.join(rating['rating_count'])
+    my_movie_corr_summary.drop(id, inplace=True) # drop my_movie itself
+    my_movie_corr_summary
+
+    top_similar = my_movie_corr_summary[my_movie_corr_summary['rating_count']>=10].sort_values('PearsonR', ascending=False).head(n)
+
+    movie_list = []
+    for i in range(n):
+        movie_list.append(movies_df['title'][movies_df.movieId==top_similar.index[i]])
+
+    return movie_list
+
+def get_movie_id(film):
+    return movies_df[movies_df['title']==film]['movieId'].values[0]
     
 def chatbot():
     st.header("Let us help You!")
@@ -92,7 +123,9 @@ def chatbot():
         suggestions = movies_df["title"].str.lower().str.contains(moviename.lower())
         if suggestions.any():
             if suggestions.sum() == 1:
-                st.write(f"Here's some movies similar to \"{movies_df[suggestions]['title'].values[0]}\":")
+                film = movies_df[suggestions]['title'].values[0]
+                st.write(f"Here's some movies similar to \"{film}\":")
+                movie_recommendation_item_based(get_movie_id(film), 3)
             else:
                 st.write('I have found multiple movies!')
                 st.table(movies_df[suggestions]['title'])
@@ -103,8 +136,10 @@ def chatbot():
                     except:
                         st.write("pick a number")
                     if isinstance(select, int):
+                        #We should really test to see that this is a valid number!
                         movieno = movies_df[suggestions].iloc[select-1]['title']
                         st.write(f"Here's some movies similar to \"{movieno}\":")
+                        movie_recommendation_item_based(get_movie_id(movieno), 3)
 
                 
         else:
