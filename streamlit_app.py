@@ -131,7 +131,7 @@ def chatbot():
                 st.write('I have found multiple movies!')
                 choice = movies_df[suggestions]['title']
                 choice.index = choice.reset_index().index +1
-                st.table(movies_df[suggestions]['title'])
+                st.table(choice)
                 select = st.text_input("Please pick from the list.")
                 if select:
                     try:
