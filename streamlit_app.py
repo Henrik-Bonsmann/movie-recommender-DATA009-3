@@ -91,7 +91,7 @@ def chatbot():
 def search_engine():
     moviename = st.text_input('Search', value="")
     if moviename:
-        suggestions = movies_df["title"].str.contains(moviename)
+        suggestions = movies_df["title"].str.lower().str.contains(moviename.lower())
         if suggestions.any():
             st.table(movies_df[suggestions][['title', 'genres', 'year']])
         else:
