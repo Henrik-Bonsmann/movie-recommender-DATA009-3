@@ -150,7 +150,9 @@ def search_engine():
     if moviename:
         suggestions = movies_df["title"].str.lower().str.contains(moviename.lower())
         if suggestions.any():
-            st.table(movies_df[suggestions][['title', 'genres', 'year']])
+            found = movies_df[suggestions][['title', 'genres', 'year']]
+            found.index = found.reset_index().index +1
+            st.table(found)
         else:
             st.write("No movies with this name in database.")
 
