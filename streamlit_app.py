@@ -39,7 +39,7 @@ def get_data():
 
     for i in range(len(movies_df)):
         if ', The' in movies_df.title[i]:
-            movies_df.title[i] = movies_df.title[i].split(", ")[1] + movies_df.title[i].split(", ")[0]
+            movies_df.title[i] = movies_df.title[i].split(", ")[1] + ' '+ movies_df.title[i].split(", ")[0]
 
     ratings_df['timestamp'] = pd.to_datetime(ratings_df['timestamp'], unit='s')
     tags_df['timestamp'] = pd.to_datetime(tags_df['timestamp'], unit='s')
@@ -108,11 +108,7 @@ def movie_recommendation_item_based(id, n): #id of a movie
 
     top_similar = my_movie_corr_summary[my_movie_corr_summary['rating_count']>=10].sort_values('PearsonR', ascending=False).head(n)
 
-    movie_list = []
-    for i in range(n):
-        movie_list.append(movies_df['title'][movies_df.movieId==top_similar.index[i]])
-
-    return movie_list
+    return top_similar.merge(movies_df, on= 'movieId')[['title']]
 
 def get_movie_id(film):
     return movies_df[movies_df['title']==film]['movieId'].values[0]
@@ -126,7 +122,7 @@ def chatbot():
             if suggestions.sum() == 1:
                 film = movies_df[suggestions]['title'].values[0]
                 st.write(f"Here's some movies similar to \"{film}\":")
-                movie_recommendation_item_based(get_movie_id(film), 3)
+                st.frame(movie_recommendation_item_based(get_movie_id(film), 3))
             else:
                 st.write('I have found multiple movies!')
                 st.table(movies_df[suggestions]['title'])
@@ -140,7 +136,7 @@ def chatbot():
                         #We should really test to see that this is a valid number!
                         movieno = movies_df[suggestions].iloc[select-1]['title']
                         st.write(f"Here's some movies similar to \"{movieno}\":")
-                        movie_recommendation_item_based(get_movie_id(movieno), 3)
+                        st.frame(movie_recommendation_item_based(get_movie_id(movieno), 3))
 
                 
         else:
