@@ -68,12 +68,7 @@ def movie_recommendation_user_based(id, n): # id of the user
 
     return recommendations[["title", "genres"]]
 
-def main():
-    get_data()
-    st.title('WBSFlix')
-    st.header('Best rated Movies!')
-    st.table(best_rated(10))
-
+def user_recommend():
     username = st.text_input("username")
     if username:
         try:
@@ -81,9 +76,38 @@ def main():
         except:
             st.write("username needs to be number")
         if isinstance(username, int) & (username in ratings_df.userId.unique()):
-            st.header("Our Recommendations for You:")
+            st.header("Chosen for You:")
             st.table(movie_recommendation_user_based(username, 5))
         else:
             st.write('No valid username detected.')
+    
+def chatbot():
+    st.header("Let us help You!")
+    st.write("Tell me a movie you like and I'll suggest something similar!")
+    moviename = st.text_input
+    if moviename:
+        suggestions = movies_df[movies_df["title"].str.contains(moviename)]
+
+def search_engine():
+    moviename = st.text_input
+    if moviename:
+        suggestions = movies_df["title"].str.contains(moviename)
+        if suggestions.any():
+            st.table(movies_df[suggestions][['title', 'genres', 'year']])
+        else:
+            st.write("No movies with this name in databas.")
+
+def main():
+    get_data()
+    st.title('WBSFlix')
+    
+    search_engine()
+
+    user_recommend()
+
+    st.header('Best rated Movies!')
+    st.table(best_rated(10))
+
+    #chatbot()
     
 main()
