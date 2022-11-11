@@ -100,10 +100,7 @@ def chatbot():
                 if select:
                     if isinstance(select, int):
                         movieno = movies_df[suggestions].iloc[select-1]['title']
-                        suggestions = movies_df["title"].str.lower().str.contains(movieno.lower())
-                        if suggestions.any():
-                            if suggestions.sum() == 1:
-                                st.write(f"Here's some movies similar to \"{movies_df[suggestions]['title'].values[0]}\":")
+                        st.write(f"Here's some movies similar to \"{movieno}\":")
 
                 
         else:
