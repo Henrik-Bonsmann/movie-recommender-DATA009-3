@@ -86,6 +86,7 @@ def user_recommend():
             st.write('No valid username detected.')
     
 def chatbot():
+    select = ''
     st.header("Let us help You!")
     moviename = st.text_input("Tell me a movie you like and I'll suggest something similar!", key = 'moviename')
     if select:
@@ -103,7 +104,6 @@ def chatbot():
                 st.table(movies_df[suggestions][['title', 'genres', 'year']])
                 select = st.text_input("Please specify or pick one by number.")
                 
-
         else:
             st.write("Sorry, I couldn't find that.")
 
