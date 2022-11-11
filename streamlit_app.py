@@ -98,6 +98,10 @@ def chatbot():
                 st.table(movies_df[suggestions]['title'])
                 select = st.text_input("Please pick from the list.")
                 if select:
+                    try:
+                        select = int(select)
+                    except:
+                        st.write("pick a number")
                     if isinstance(select, int):
                         movieno = movies_df[suggestions].iloc[select-1]['title']
                         st.write(f"Here's some movies similar to \"{movieno}\":")
