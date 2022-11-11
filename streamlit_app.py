@@ -48,7 +48,9 @@ def best_rated(n=10):
     best = ratings_df.groupby('movieId', as_index = False).aggregate({'userId': 'count', 'rating':'mean'})
     best["opinion"] = best["rating"]*np.log(best["userId"])
     rank = movies_df.merge(best, on= 'movieId')
-    return rank.nlargest(n, 'opinion')[['title', 'rating', 'userId']].rename(columns = {'title': 'Title', 'rating': 'Rating', 'userId': '#Ratings'})
+    rank = rank.nlargest(n, 'opinion')[['title', 'rating', 'userId']].rename(columns = {'title': 'Title', 'rating': 'Rating', 'userId': '#Ratings'})
+    rank.index = rank.reset_index().index+1
+    return rank
 
 def movie_recommendation_user_based(id, n): # id of the user
     users_items_sparse = pd.pivot_table(data=ratings_df,
@@ -69,6 +71,7 @@ def movie_recommendation_user_based(id, n): # id of the user
     weighted_averages = pd.DataFrame(not_watched_movies.T.dot(weights), columns=["predicted_rating"])
 
     recommendations = weighted_averages.merge(movies_df, left_index=True, right_on="movieId").sort_values("predicted_rating", ascending=False).head(n)
+    recommendations.index = recommendations.reset_index().index +1 
 
     return recommendations[["title", "genres"]]
 
@@ -106,8 +109,9 @@ def movie_recommendation_item_based(id, n): #id of a movie
     my_movie_corr_summary.drop(id, inplace=True) # drop my_movie itself
 
     top_similar = my_movie_corr_summary[my_movie_corr_summary['rating_count']>=10].sort_values('PearsonR', ascending=False).head(n)
+    top_similar.index = top_similar.reset_index().index +1
 
-    return top_similar.merge(movies_df, on= 'movieId')[['title']]
+    return top_similar.merge(movies_df, on= 'movieId')[['title', 'genres']]
 
 def get_movie_id(film):
     return movies_df[movies_df['title']==film]['movieId'].values[0]
