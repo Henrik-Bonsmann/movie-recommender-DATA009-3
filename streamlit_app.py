@@ -83,7 +83,7 @@ def user_recommend():
     
 def chatbot():
     st.header("Let us help You!")
-    moviename = st.text_input("Tell me a movie you like and I'll suggest something similar!")
+    moviename = st.text_input("Tell me a movie you like and I'll suggest something similar!", key = 'moviename')
     if moviename:
         suggestions = movies_df["title"].str.lower().str.contains(moviename.lower())
         if suggestions.any():
@@ -94,9 +94,9 @@ def chatbot():
                 st.table(movies_df[suggestions][['title', 'genres', 'year']])
                 select = st.text_input("Please specify or pick one by number.")
                 if isinstance(select, int):
-                    moviename = movies_df[suggestions].iloc(select-1)
+                    st.session_state.moviename = movies_df[suggestions].iloc(select-1)
                 else:
-                    moviename = select
+                    st.session_state.moviename = select
 
         else:
             st.write("Sorry, I couldn't find that.")
