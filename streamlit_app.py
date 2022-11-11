@@ -104,7 +104,6 @@ def movie_recommendation_item_based(id, n): #id of a movie
 
     my_movie_corr_summary = corr_my_movie.join(rating['rating_count'])
     my_movie_corr_summary.drop(id, inplace=True) # drop my_movie itself
-    my_movie_corr_summary
 
     top_similar = my_movie_corr_summary[my_movie_corr_summary['rating_count']>=10].sort_values('PearsonR', ascending=False).head(n)
 
