@@ -37,6 +37,10 @@ def get_data():
     movies_df['title'] = movies_df['title'].str.replace(r"\(.*\)","")
     #movies_df['genres'] = movies_df['genres'].str.split("|")
 
+    for i in range(len(movies_df)):
+        if ', The' in movies_df.title[i]:
+            movies_df.title[i] = movies_df.title[i].split(", ")[1] + movies_df.title[i].split(", ")[0]
+
     ratings_df['timestamp'] = pd.to_datetime(ratings_df['timestamp'], unit='s')
     tags_df['timestamp'] = pd.to_datetime(tags_df['timestamp'], unit='s')
 
@@ -84,6 +88,11 @@ def user_recommend():
 def chatbot():
     st.header("Let us help You!")
     moviename = st.text_input("Tell me a movie you like and I'll suggest something similar!", key = 'moviename')
+    if select:
+        if isinstance(select, int):
+            moviename = movies_df[suggestions].iloc(select-1)
+        else:
+            moviename = select
     if moviename:
         suggestions = movies_df["title"].str.lower().str.contains(moviename.lower())
         if suggestions.any():
@@ -93,11 +102,7 @@ def chatbot():
                 st.write('I have found multiple movies!')
                 st.table(movies_df[suggestions][['title', 'genres', 'year']])
                 select = st.text_input("Please specify or pick one by number.")
-                if select:
-                    if isinstance(select, int):
-                        st.session_state.moviename = movies_df[suggestions].iloc(select-1)
-                    else:
-                        st.session_state.moviename = select
+                
 
         else:
             st.write("Sorry, I couldn't find that.")
