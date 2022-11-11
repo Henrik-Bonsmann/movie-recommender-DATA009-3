@@ -80,7 +80,7 @@ def main():
             username = int(username)
         except:
             st.write("username needs to be number")
-        if int(username) in ratings_df.userId.unique():
+        if isinstance(username, int) & (username in ratings_df.userId.unique()):
             st.header("Our Recommendations for You:")
             st.table(movie_recommendation_user_based(username, 5))
         else:
